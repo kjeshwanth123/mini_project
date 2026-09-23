@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Report History - MedVerify{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="bi bi-file-medical"></i> Report History</h3>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Upload New Report
+    </a>
+</div>
+
+{% if reports %}
+<div class="table-responsive">
+    <table class="table table-hover bg-white rounded shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>Patient</th>
+                <th>Hospital</th>
+                <th>Doctor</th>
+                <th>Diagnosis</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Uploaded</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>{{ report.patient_name }}</td>
+                <td>{{ report.hospital }}</td>
+                <td>{{ report.doctor }}</td>
+                <td>{{ report.diagnosis[:40] }}{% if report.diagnosis|length > 40 %}...{% endif %}</td>
+                <td>{{ report.report_date }}</td>
+                <td>
+                    <span class="badge rounded-pill {% if report.verification_status == 'VALID REPORT' %}status-valid{% else %}status-suspicious{% endif %}">
+                        {{ report.verification_status }}
+                    </span>
+                </td>
+                <td>{{ report.confidence_score }}%</td>
+                <td>{{ report.created_at.strftime('%Y-%m-%d %H:%M') if report.created_at else 'N/A' }}</td>
+                <td>
+                    <a href="{{ url_for('report_detail', report_id=report.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_report', report_id=report.id) }}" class="d-inline"
+                          onsubmit="return confirm('Delete this report permanently?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card report-card">
+    <div class="card-body empty-state">
+        <i class="bi bi-folder2-open d-block"></i>
+        <p class="mb-2">No reports in your history yet.</p>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Upload Your First Report</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

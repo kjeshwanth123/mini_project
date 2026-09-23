@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Report Details - MedVerify{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="bi bi-file-earmark-text"></i> Report Details</h3>
+    <div>
+        <a href="{{ url_for('reports') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to History
+        </a>
+        <form method="POST" action="{{ url_for('delete_report', report_id=report.id) }}" class="d-inline"
+              onsubmit="return confirm('Delete this report permanently?');">
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-trash"></i> Delete
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card report-card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Extracted Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="detail-label">Patient Name</div>
+                        <div class="detail-value">{{ report.patient_name }}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="detail-label">Age</div>
+                        <div class="detail-value">{{ report.age }}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="detail-label">Gender</div>
+                        <div class="detail-value">{{ report.gender }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Hospital</div>
+                        <div class="detail-value">{{ report.hospital }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Doctor</div>
+                        <div class="detail-value">{{ report.doctor }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Report Date</div>
+                        <div class="detail-value">{{ report.report_date }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Uploaded On</div>
+                        <div class="detail-value">{{ report.created_at.strftime('%Y-%m-%d %H:%M') if report.created_at else 'N/A' }}</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="detail-label">Diagnosis</div>
+                        <div class="detail-value">{{ report.diagnosis }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Medicines</div>
+                        <div class="detail-value">{{ report.medicines }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-label">Test Results</div>
+                        <div class="detail-value">{{ report.test_results }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card report-card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">OCR Extracted Text</h5>
+            </div>
+            <div class="card-body">
+                <textarea class="form-control" rows="12" readonly>{{ report.extracted_text }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card report-card mb-4">
+            <div class="card-body text-center p-4">
+                <h5>Verification Result</h5>
+                <span class="badge rounded-pill fs-6 px-3 py-2 mt-2 {% if report.verification_status == 'VALID REPORT' %}status-valid{% else %}status-suspicious{% endif %}">
+                    {{ report.verification_status }}
+                </span>
+                <div class="mt-4">
+                    <h2 class="text-primary mb-0">{{ report.confidence_score }}%</h2>
+                    <small class="text-muted">Verification Score</small>
+                </div>
+                <div class="confidence-bar mt-3">
+                    <div class="confidence-fill bg-{% if report.confidence_score >= 70 %}success{% elif report.confidence_score >= 40 %}warning{% else %}danger{% endif %}"
+                         style="width: {{ report.confidence_score }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card report-card">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">Medical Summary</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><strong>Patient:</strong> {{ report.patient_name }}</p>
+                <p class="mb-2"><strong>Condition:</strong> {{ report.diagnosis }}</p>
+                <p class="mb-2"><strong>Treated at:</strong> {{ report.hospital }}</p>
+                <p class="mb-2"><strong>Attending:</strong> {{ report.doctor }}</p>
+                {% if report.verification_status == 'SUSPICIOUS REPORT' %}
+                <div class="alert alert-warning mt-3 mb-0 py-2">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    This report may be incomplete or suspicious. Review the extracted fields carefully.
+                </div>
+                {% else %}
+                <div class="alert alert-success mt-3 mb-0 py-2">
+                    <i class="bi bi-check-circle"></i>
+                    Key medical fields were detected successfully.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

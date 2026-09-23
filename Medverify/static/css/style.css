@@ -1,0 +1,139 @@
+:root {
+    --med-primary: #0d6efd;
+    --med-success: #198754;
+    --med-danger: #dc3545;
+    --med-warning: #ffc107;
+    --med-bg: #f0f4f8;
+    --med-card: #ffffff;
+    --med-text: #2c3e50;
+    --med-muted: #6c757d;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--med-bg);
+    color: var(--med-text);
+    min-height: 100vh;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.hero-section {
+    padding: 100px 0 80px;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--med-primary);
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    color: var(--med-muted);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.auth-card {
+    max-width: 450px;
+    margin: 80px auto;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.upload-zone {
+    border: 2px dashed #ced4da;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    background: #fafbfc;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.upload-zone:hover {
+    border-color: var(--med-primary);
+    background: #f0f7ff;
+}
+
+.report-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+}
+
+.report-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.status-valid {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-suspicious {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.confidence-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: #e9ecef;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--med-muted);
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+footer {
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    text-align: center;
+    color: var(--med-muted);
+    font-size: 0.875rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--med-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}

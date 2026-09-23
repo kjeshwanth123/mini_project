@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MedVerify{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2 class="mb-1">Welcome, {{ user.username }}!</h2>
+    <p class="mb-0 opacity-75">Upload a medical report to verify and analyze it with AI.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card report-card">
+            <div class="card-body p-4">
+                <h5 class="card-title"><i class="bi bi-cloud-upload"></i> Upload Report</h5>
+                <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+                    <div class="upload-zone mb-3">
+                        <i class="bi bi-file-earmark-medical text-primary" style="font-size: 2rem;"></i>
+                        <p class="text-muted mt-2 mb-2">JPG, JPEG, PNG, or PDF (max 16 MB)</p>
+                        <input type="file" name="report" class="form-control" accept=".png,.jpg,.jpeg,.pdf" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-upload"></i> Upload & Analyze
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Latest Reports</h5>
+            <a href="{{ url_for('reports') }}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+
+        {% if reports %}
+        <div class="row g-3">
+            {% for report in reports %}
+            <div class="col-12">
+                <div class="card report-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ report.patient_name }}</h6>
+                                <small class="text-muted">{{ report.hospital }}</small>
+                            </div>
+                            <span class="badge rounded-pill {% if report.verification_status == 'VALID REPORT' %}status-valid{% else %}status-suspicious{% endif %}">
+                                {{ report.verification_status }}
+                            </span>
+                        </div>
+                        <div class="row mt-2 g-2">
+                            <div class="col-6">
+                                <small class="text-muted">Doctor:</small> {{ report.doctor }}
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Date:</small> {{ report.report_date }}
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted">Diagnosis:</small> {{ report.diagnosis }}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">Confidence: {{ report.confidence_score }}%</small>
+                            <div class="confidence-bar mt-1">
+                                <div class="confidence-fill bg-{% if report.confidence_score >= 70 %}success{% elif report.confidence_score >= 40 %}warning{% else %}danger{% endif %}"
+                                     style="width: {{ report.confidence_score }}%;"></div>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('report_detail', report_id=report.id) }}" class="btn btn-sm btn-outline-primary mt-2">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card report-card">
+            <div class="card-body empty-state">
+                <i class="bi bi-inbox d-block"></i>
+                <p class="mb-0">No reports yet. Upload your first medical report above.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
