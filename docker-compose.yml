@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./ml:/app/ml
+      - ./reports:/app/reports
+      - ./uploads:/app/uploads
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    # Dockerfile is NOT IMPLEMENTED YET (Phase 18). This file is a deployment sketch.
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    # Used after the Vite app exists. Frontend scaffold may still be partial in Phase 1.
