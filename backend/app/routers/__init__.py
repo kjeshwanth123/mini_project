@@ -1,1 +1,3 @@
-"""HTTP routers. Domain routes are NOT IMPLEMENTED YET (Phase 3+)."""
+from app.routers import admin, auth, medications
+
+__all__ = ["auth", "medications", "admin"]

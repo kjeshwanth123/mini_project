@@ -21,7 +21,7 @@ def test_health_ok() -> None:
     assert body["app"] == "Heart Health AI"
 
 
-def test_root_does_not_fake_domain_apis() -> None:
+def test_root_points_to_auth() -> None:
     response = client.get("/")
     assert response.status_code == 200
-    assert "NOT IMPLEMENTED YET" in response.json()["note"]
+    assert response.json()["login"] == "/api/auth/login"

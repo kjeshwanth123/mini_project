@@ -1,1 +1,3 @@
-"""Pydantic schemas. Domain schemas are NOT IMPLEMENTED YET (Phase 2+)."""
+from app.schemas.auth import MeResponse, RegisterRequest, TokenResponse, UserPublic
+
+__all__ = ["RegisterRequest", "TokenResponse", "UserPublic", "MeResponse"]

@@ -1,1 +1,1 @@
-"""Application services. Prediction/recommendation services are NOT IMPLEMENTED YET."""
+"""Seed and audit helpers."""

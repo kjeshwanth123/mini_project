@@ -27,7 +27,11 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = 60
 
     cors_origins: List[str] = Field(
-        default_factory=lambda: ["http://localhost:5173", "http://localhost:3000"]
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+        ]
     )
 
     model_path: str = "./ml/models/best_model.joblib"
