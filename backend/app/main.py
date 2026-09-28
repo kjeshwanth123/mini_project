@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import Base, SessionLocal, engine
 from app.models import entities as _entities  # noqa: F401  — register tables
-from app.routers import admin, auth, medications
+from app.routers import admin, assistant, auth, doctor, health_records, medications, model, predictions, reports
 from app.services.seed import seed_database
 
 settings = get_settings()
@@ -44,6 +44,12 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(medications.router)
 app.include_router(admin.router)
+app.include_router(predictions.router)
+app.include_router(health_records.router)
+app.include_router(reports.router)
+app.include_router(doctor.router)
+app.include_router(assistant.router)
+app.include_router(model.router)
 
 
 @app.get("/health")

@@ -72,6 +72,24 @@ def write_audit(db: Session, action: str, user_id: int | None = None, details: d
     db.add(AuditLog(user_id=user_id, action=action, details=details or {}))
 
 
+def seed_doctor(db: Session) -> None:
+    settings = get_settings()
+    if not settings.doctor_email or not settings.doctor_password:
+        return
+    existing = db.query(User).filter(User.email == settings.doctor_email.lower()).first()
+    if existing:
+        return
+    doctor = User(
+        name="Demo Clinician",
+        email=settings.doctor_email.lower(),
+        password_hash=hash_password(settings.doctor_password),
+        role=UserRole.DOCTOR.value,
+    )
+    db.add(doctor)
+    db.flush()
+    write_audit(db, "seed_doctor", doctor.id, {"email": doctor.email})
+
+
 def seed_admin(db: Session) -> None:
     settings = get_settings()
     if not settings.admin_email or not settings.admin_password:
@@ -108,5 +126,6 @@ def ensure_patient_profile(db: Session, user: User) -> PatientProfile:
 
 def seed_database(db: Session) -> None:
     seed_admin(db)
+    seed_doctor(db)
     seed_medications(db)
     db.commit()

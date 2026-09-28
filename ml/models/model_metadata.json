@@ -1,0 +1,217 @@
+{
+  "model_name": "random_forest",
+  "version": "v20260924T092648Z",
+  "trained_at": "2026-09-24T09:26:48.003095+00:00",
+  "dataset_path": "ml\\data\\heart_disease.csv",
+  "n_rows": 303,
+  "features": [
+    "age",
+    "sex",
+    "chest_pain_type",
+    "resting_bp",
+    "cholesterol",
+    "fasting_blood_sugar",
+    "resting_ecg",
+    "max_heart_rate",
+    "exercise_angina",
+    "oldpeak",
+    "st_slope"
+  ],
+  "primary_metric": "test_roc_auc",
+  "selection_rule": "Highest test ROC-AUC among compared algorithms after 5-fold CV GridSearch.",
+  "test_metrics": {
+    "accuracy": 0.7868852459016393,
+    "precision": 0.7777777777777778,
+    "recall": 0.8484848484848485,
+    "f1": 0.8115942028985508,
+    "confusion_matrix": [
+      [
+        20,
+        8
+      ],
+      [
+        5,
+        28
+      ]
+    ],
+    "n_test": 61,
+    "roc_auc": 0.8446969696969697
+  },
+  "comparison": [
+    {
+      "name": "logistic_regression",
+      "cv_roc_auc": 0.8731157731157732,
+      "best_params": {
+        "clf__C": 0.1
+      },
+      "test_metrics": {
+        "accuracy": 0.7540983606557377,
+        "precision": 0.7368421052631579,
+        "recall": 0.8484848484848485,
+        "f1": 0.7887323943661971,
+        "confusion_matrix": [
+          [
+            18,
+            10
+          ],
+          [
+            5,
+            28
+          ]
+        ],
+        "n_test": 61,
+        "roc_auc": 0.8311688311688312
+      }
+    },
+    {
+      "name": "decision_tree",
+      "cv_roc_auc": 0.7923983423983423,
+      "best_params": {
+        "clf__max_depth": 3,
+        "clf__min_samples_split": 2
+      },
+      "test_metrics": {
+        "accuracy": 0.7377049180327869,
+        "precision": 0.7428571428571429,
+        "recall": 0.7878787878787878,
+        "f1": 0.7647058823529411,
+        "confusion_matrix": [
+          [
+            19,
+            9
+          ],
+          [
+            7,
+            26
+          ]
+        ],
+        "n_test": 61,
+        "roc_auc": 0.7727272727272727
+      }
+    },
+    {
+      "name": "random_forest",
+      "cv_roc_auc": 0.8507964257964258,
+      "best_params": {
+        "clf__max_depth": null,
+        "clf__n_estimators": 160
+      },
+      "test_metrics": {
+        "accuracy": 0.7868852459016393,
+        "precision": 0.7777777777777778,
+        "recall": 0.8484848484848485,
+        "f1": 0.8115942028985508,
+        "confusion_matrix": [
+          [
+            20,
+            8
+          ],
+          [
+            5,
+            28
+          ]
+        ],
+        "n_test": 61,
+        "roc_auc": 0.8446969696969697
+      }
+    },
+    {
+      "name": "knn",
+      "cv_roc_auc": 0.841996891996892,
+      "best_params": {
+        "clf__n_neighbors": 9
+      },
+      "test_metrics": {
+        "accuracy": 0.7868852459016393,
+        "precision": 0.7777777777777778,
+        "recall": 0.8484848484848485,
+        "f1": 0.8115942028985508,
+        "confusion_matrix": [
+          [
+            20,
+            8
+          ],
+          [
+            5,
+            28
+          ]
+        ],
+        "n_test": 61,
+        "roc_auc": 0.8436147186147186
+      }
+    },
+    {
+      "name": "svm",
+      "cv_roc_auc": 0.8680652680652681,
+      "best_params": {
+        "clf__C": 0.5,
+        "clf__kernel": "linear"
+      },
+      "test_metrics": {
+        "accuracy": 0.7704918032786885,
+        "precision": 0.7435897435897436,
+        "recall": 0.8787878787878788,
+        "f1": 0.8055555555555556,
+        "confusion_matrix": [
+          [
+            18,
+            10
+          ],
+          [
+            4,
+            29
+          ]
+        ],
+        "n_test": 61,
+        "roc_auc": 0.8268398268398268
+      }
+    }
+  ],
+  "global_feature_attribution": [
+    {
+      "feature": "chest_pain_type",
+      "importance": 0.18954683706157943
+    },
+    {
+      "feature": "oldpeak",
+      "importance": 0.14503559747190936
+    },
+    {
+      "feature": "max_heart_rate",
+      "importance": 0.13483599578622513
+    },
+    {
+      "feature": "cholesterol",
+      "importance": 0.10756834691832577
+    },
+    {
+      "feature": "age",
+      "importance": 0.09994355116886497
+    },
+    {
+      "feature": "resting_bp",
+      "importance": 0.09549647981701509
+    },
+    {
+      "feature": "exercise_angina",
+      "importance": 0.07766825268533632
+    },
+    {
+      "feature": "st_slope",
+      "importance": 0.06991502671609959
+    },
+    {
+      "feature": "sex",
+      "importance": 0.043021207209864284
+    },
+    {
+      "feature": "resting_ecg",
+      "importance": 0.0246925805201601
+    },
+    {
+      "feature": "fasting_blood_sugar",
+      "importance": 0.012276124644620025
+    }
+  ],
+  "disclaimer": "These metrics were measured on a held-out split of a public educational dataset. They are not a clinical accuracy claim and must not be copied as a marketing number."
+}

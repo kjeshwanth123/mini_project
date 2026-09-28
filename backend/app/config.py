@@ -41,6 +41,8 @@ class Settings(BaseSettings):
 
     admin_email: str = "admin@hearthealthai.dev"
     admin_password: str = ""
+    doctor_email: str = "doctor@hearthealthai.dev"
+    doctor_password: str = ""
 
     openai_api_key: str = ""
     openai_model: str = "gpt-4.1-mini"

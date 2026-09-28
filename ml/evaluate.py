@@ -1,12 +1,18 @@
-"""
-Evaluation entrypoint.
+"""Print metrics from the last training run."""
 
-NOT IMPLEMENTED YET — Phase 5 will print metrics from the trained artifacts.
-"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+META = REPO_ROOT / "ml" / "models" / "model_metadata.json"
 
 
 def main() -> None:
-    raise SystemExit("NOT IMPLEMENTED YET: run after Phase 5 (ml/evaluate.py).")
+    if not META.exists():
+        raise SystemExit("NOT IMPLEMENTED YET: train first with python ml/train.py")
+    print(META.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
