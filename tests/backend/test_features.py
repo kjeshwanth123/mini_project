@@ -12,15 +12,16 @@ from app.main import app
 client = TestClient(app)
 
 
-def _get_patient_token() -> str:
+def _get_patient_tokens() -> tuple[str, str]:
     email = "test_features_patient@example.com"
     client.post("/api/auth/register", json={"name": "Feature Test Patient", "email": email, "password": "password12"})
     login = client.post("/api/auth/login", json={"email": email, "password": "password12"})
-    return login.json()["access_token"]
+    data = login.json()
+    return data["access_token"], data["refresh_token"]
 
 
 def test_simulation_endpoint() -> None:
-    token = _get_patient_token()
+    access_token, _ = _get_patient_tokens()
     payload = {
         "age": 55,
         "sex": 1,
@@ -34,7 +35,7 @@ def test_simulation_endpoint() -> None:
         "oldpeak": 1.8,
         "st_slope": 1,
     }
-    res = client.post("/api/predictions/simulate", json=payload, headers={"Authorization": f"Bearer {token}"})
+    res = client.post("/api/predictions/simulate", json=payload, headers={"Authorization": f"Bearer {access_token}"})
     assert res.status_code == 200
     data = res.json()
     assert "current_probability" in data
@@ -45,11 +46,11 @@ def test_simulation_endpoint() -> None:
 
 
 def test_assistant_rag_chat() -> None:
-    token = _get_patient_token()
+    access_token, _ = _get_patient_tokens()
     res = client.post(
         "/api/assistant/chat",
         json={"message": "What does resting blood pressure mean for heart risk?"},
-        headers={"Authorization": f"Bearer {token}"},
+        headers={"Authorization": f"Bearer {access_token}"},
     )
     assert res.status_code == 200
     data = res.json()
@@ -59,7 +60,7 @@ def test_assistant_rag_chat() -> None:
 
 
 def test_ocr_extraction() -> None:
-    token = _get_patient_token()
+    access_token, _ = _get_patient_tokens()
     sample_report_text = (
         "CARDIOLOGY CLINIC REPORT\n"
         "Patient: John Doe, Age: 58, Sex: Male\n"
@@ -71,15 +72,58 @@ def test_ocr_extraction() -> None:
         "Impression: Mild hypertension, borderline hyperlipidemia."
     )
 
-    # Use a dummy text/file upload
     file_bytes = io.BytesIO(sample_report_text.encode("utf-8"))
     res = client.post(
         "/api/reports/ocr-extract",
         files={"file": ("lab_report.png", file_bytes, "image/png")},
-        headers={"Authorization": f"Bearer {token}"},
+        headers={"Authorization": f"Bearer {access_token}"},
     )
     assert res.status_code == 200
     data = res.json()
     assert "extracted_features" in data
     assert "summary" in data
     assert data["filename"] == "lab_report.png"
+
+
+def test_refresh_token_endpoint() -> None:
+    _, refresh_token = _get_patient_tokens()
+    res = client.post("/api/auth/refresh", json={"refresh_token": refresh_token})
+    assert res.status_code == 200
+    body = res.json()
+    assert "access_token" in body
+    assert "refresh_token" in body
+
+
+def test_integrations_wearable_and_notifications() -> None:
+    access_token, _ = _get_patient_tokens()
+
+    # Wearable telemetry sync
+    wearable_res = client.post(
+        "/api/integrations/wearables/sync",
+        json={
+            "device_id": "watch_apple_s9_123",
+            "device_type": "apple_watch",
+            "timestamp": "2026-10-28T10:00:00Z",
+            "heart_rate_bpm": 74,
+            "resting_heart_rate": 62,
+            "blood_pressure_systolic": 122,
+            "blood_pressure_diastolic": 78,
+            "ecg_rhythm_classification": "normal_sinus",
+        },
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert wearable_res.status_code == 200
+    assert wearable_res.json()["status"] == "synchronized"
+
+    # Notification dispatch
+    notify_res = client.post(
+        "/api/integrations/notify",
+        json={
+            "recipient": "+15551234567",
+            "channel": "whatsapp",
+            "message": "Your heart health assessment is complete.",
+        },
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert notify_res.status_code == 200
+    assert notify_res.json()["status"] == "delivered"
