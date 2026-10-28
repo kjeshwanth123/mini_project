@@ -195,3 +195,112 @@ def get_prediction(
         raise HTTPException(status_code=403, detail="Not authorized for this record")
     meds = db.query(MedicationInformation).order_by(MedicationInformation.medication_name).all()
     return serialize_prediction(pred, meds)
+
+
+@router.post("/simulate")
+def simulate_lifestyle_impact(
+    body: AssessmentRequest,
+    user: Annotated[User, Depends(get_current_user)],
+) -> dict:
+    try:
+        runtime = get_runtime()
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    features = body.model_dump(exclude={"emergency_symptoms"})
+    base_res = predict_features(runtime, features)
+    base_prob = float(base_res["probability"])
+    base_risk = base_res["risk_level"]
+
+    scenarios = []
+
+    # Scenario 1: Optimized BP
+    bp_features = dict(features)
+    bp_features["resting_bp"] = min(float(bp_features["resting_bp"]), 118.0)
+    bp_res = predict_features(runtime, bp_features)
+    bp_prob = float(bp_res["probability"])
+    bp_delta = round((base_prob - bp_prob) * 100, 1)
+    scenarios.append({
+        "title": "Optimized Blood Pressure (<=118 mmHg)",
+        "description": "Adopting DASH dietary patterns, sodium reduction, and stress management.",
+        "probability": bp_prob,
+        "risk_level": bp_res["risk_level"],
+        "delta_percentage": bp_delta,
+    })
+
+    # Scenario 2: Optimized Cholesterol
+    chol_features = dict(features)
+    chol_features["cholesterol"] = min(float(chol_features["cholesterol"]), 180.0)
+    chol_res = predict_features(runtime, chol_features)
+    chol_prob = float(chol_res["probability"])
+    chol_delta = round((base_prob - chol_prob) * 100, 1)
+    scenarios.append({
+        "title": "Optimized Lipid Profile (<=180 mg/dL)",
+        "description": "Limiting saturated fats, increasing soluble fiber, and cardiovascular exercise.",
+        "probability": chol_prob,
+        "risk_level": chol_res["risk_level"],
+        "delta_percentage": chol_delta,
+    })
+
+    # Scenario 3: Aerobic Conditioning
+    fit_features = dict(features)
+    fit_features["max_heart_rate"] = min(float(fit_features["max_heart_rate"]) + 15.0, 185.0)
+    fit_features["exercise_angina"] = 0
+    fit_res = predict_features(runtime, fit_features)
+    fit_prob = float(fit_res["probability"])
+    fit_delta = round((base_prob - fit_prob) * 100, 1)
+    scenarios.append({
+        "title": "Aerobic Fitness & Exercise Conditioning",
+        "description": "150 mins/week moderate aerobic training improving peak cardiac reserve.",
+        "probability": fit_prob,
+        "risk_level": fit_res["risk_level"],
+        "delta_percentage": fit_delta,
+    })
+
+    # Scenario 4: Comprehensive Multi-Factor Optimization
+    opt_features = dict(features)
+    opt_features["resting_bp"] = min(float(opt_features["resting_bp"]), 118.0)
+    opt_features["cholesterol"] = min(float(opt_features["cholesterol"]), 180.0)
+    opt_features["max_heart_rate"] = min(float(opt_features["max_heart_rate"]) + 15.0, 185.0)
+    opt_features["exercise_angina"] = 0
+    opt_features["fasting_blood_sugar"] = 0
+    opt_res = predict_features(runtime, opt_features)
+    opt_prob = float(opt_res["probability"])
+    opt_delta = round((base_prob - opt_prob) * 100, 1)
+    scenarios.append({
+        "title": "Comprehensive Cardiac Optimization",
+        "description": "Combined BP normalization, lipid control, aerobic fitness, and glycemic balance.",
+        "probability": opt_prob,
+        "risk_level": opt_res["risk_level"],
+        "delta_percentage": opt_delta,
+    })
+
+    # 10-Year Timeline Projection
+    age = float(features["age"])
+    timeline = []
+    for yr in [0, 2, 5, 8, 10]:
+        age_factor = 1.0 + (yr * 0.02)
+        base_proj = min(1.0, round(base_prob * age_factor, 3))
+        imp_proj = min(1.0, round(opt_prob * (1.0 + (yr * 0.008)), 3))
+        timeline.append({
+            "year_offset": yr,
+            "projected_age": int(age + yr),
+            "baseline_risk": base_proj,
+            "improved_risk": imp_proj,
+        })
+
+    insights = [
+        f"Your current estimated cardiac risk score is {round(base_prob * 100, 1)}% ({base_risk.upper()} risk).",
+        f"Comprehensive cardiovascular optimization can reduce your risk score by up to {opt_delta}%.",
+        "Targeting blood pressure and blood lipids together produces synergistic cardiovascular protection.",
+        "Regular aerobic exercise strengthens myocardial perfusion and increases peak heart rate reserves.",
+    ]
+
+    return {
+        "current_probability": base_prob,
+        "current_risk_level": base_risk,
+        "scenarios": scenarios,
+        "forecast_timeline": timeline,
+        "actionable_insights": insights,
+    }
+

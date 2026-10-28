@@ -48,3 +48,25 @@ class PredictionResponse(BaseModel):
     emergency_message: Optional[str] = None
     disclaimer: str
     created_at: str
+
+
+class SimulationScenario(BaseModel):
+    title: str
+    description: str
+    probability: float
+    risk_level: str
+    delta_percentage: float
+
+
+class ForecastPoint(BaseModel):
+    year_offset: int
+    baseline_risk: float
+    improved_risk: float
+
+
+class SimulationResponse(BaseModel):
+    current_probability: float
+    current_risk_level: str
+    scenarios: list[SimulationScenario]
+    forecast_timeline: list[ForecastPoint]
+    actionable_insights: list[str]
