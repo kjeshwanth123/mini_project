@@ -16,6 +16,7 @@ from app.routers import (
     auth,
     doctor,
     health_records,
+    integrations,
     medications,
     model,
     ocr,
@@ -108,6 +109,7 @@ app.include_router(predictions.router)
 app.include_router(health_records.router)
 app.include_router(reports.router)
 app.include_router(ocr.router)
+app.include_router(integrations.router)
 app.include_router(doctor.router)
 app.include_router(assistant.router)
 app.include_router(model.router)
