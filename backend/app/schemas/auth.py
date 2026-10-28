@@ -8,6 +8,7 @@ class RegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=120)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    role: Optional[str] = "patient"
 
 
 class LoginRequest(BaseModel):
@@ -15,8 +16,13 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1, max_length=128)
 
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str = "bearer"
     role: str
     name: str
